@@ -2,14 +2,21 @@
 <html>
 <body>
 
+<h1>Design Guide</h1>
 <form>
-  <label for="fname">Endpoint</label><br>
+  <label for="fname">Paste endpoint here:</label><br>
   <input type="text" id="fname" name="fname"><br>
 </form>
 <br/>
+<button onclick="checkScore()">Calculate score</button>
+<button onclick="Load()">Load</button>
+<button onclick="Save()">Save</button>
+<br/>
 <br/>
 
 
+<hr>
+<h3>Basics</h3>
 <form>
   Is the design resource centric?
   <input type="checkbox" id="q1">
@@ -20,6 +27,8 @@
   <input type="checkbox" id="q2">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
+<input type="text" id="basicsfield" name="fname"><br>
 
 
 <h3>Routes</h3>
@@ -38,6 +47,7 @@
   <input type="checkbox" id="q5">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="routesfield" name="fname"><br>
 
 
@@ -52,6 +62,7 @@
   <input type="checkbox" id="q7">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="verbsfield" name="fname"><br>
 
 
@@ -71,6 +82,7 @@
   <input type="checkbox" id="q10">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="nestingfield" name="fname"><br>
 
 
@@ -110,6 +122,7 @@
   <input type="checkbox" id="q17">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="datatypesfield" name="fname"><br>
 
 
@@ -134,6 +147,7 @@
   <input type="checkbox" id="q21">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="namingfield" name="fname"><br>
 
 
@@ -153,6 +167,7 @@
   <input type="checkbox" id="q24">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="collectionfield" name="fname"><br>
 
 
@@ -167,6 +182,7 @@
   <input type="checkbox" id="q26">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="returningresourcefield" name="fname"><br>
 
 
@@ -186,6 +202,7 @@
   <input type="checkbox" id="q29">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="creatingresourcefield" name="fname"><br>
 
 
@@ -205,6 +222,7 @@
   <input type="checkbox" id="q32">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="updatingresourcefield" name="fname"><br>
 
 
@@ -229,6 +247,7 @@
   <input type="checkbox" id="q36">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="streamingfield" name="fname"><br>
 
 
@@ -248,22 +267,9 @@
   <input type="checkbox" id="q39">
   <label for="vehicle1"> Passed </label><br/><br/>
 </form>
+<p>Comments:</p>
 <input type="text" id="rolesfield" name="fname"><br>
 
-
-<br/>
-<br/>
-<br/>
-<br/>
-<button onclick="checkScore()">Calculate score</button>
-<br/>
-<br/>
-<br/>
-
-<p>Previous endpoint:</p>
-<p id="previous"></p>
-<button onclick="Load()">Load</button>
-<button onclick="Save()">Save</button>
 
 <script>
 document.getElementById('fname').style.width="800px";
@@ -278,6 +284,8 @@ document.getElementById('datatypesfield').style.width="800px";
 document.getElementById('nestingfield').style.width="800px";
 document.getElementById('verbsfield').style.width="800px";
 document.getElementById('rolesfield').style.width="800px";
+document.getElementById('basicsfield').style.width="800px";
+
 
 document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
 
@@ -329,8 +337,6 @@ function Save() {
 function Load() {
   var endpoint = document.getElementById("fname").value
   let state = JSON.parse(localStorage.getItem(endpoint));
-  console.log("loaded state:")
-  console.log(state)
   for (var key in state["checkbox"]) {
     if (state["checkbox"][key] == true) {
       document.getElementById(key).checked = true
