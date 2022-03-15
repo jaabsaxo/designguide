@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
 <body>
-
+  <p id="demo">A Paragraph</p>
 <h1>Design Guide</h1>
 <form>
   <label for="fname">Paste endpoint here:</label><br>
   <input type="text" id="fname" name="fname"><br>
 </form>
+<br/>
+<p id="scoreId">Review Score: 0 %</p>
 <br/>
 <button onclick="checkScore()">Calculate score</button>
 <button onclick="Load()">Load</button>
@@ -303,7 +305,8 @@ function checkScore() {
       number_of_checks += 1;
     }
   }
-  console.log((Math.round((score/number_of_checks)*1000)/10) + " %")
+  var score = Math.round((score/number_of_checks)*1000)/10;
+  document.getElementById("scoreId").innerHTML = "Review Score: " + score + "%"
 }
 
 
