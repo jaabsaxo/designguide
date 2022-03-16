@@ -16,6 +16,24 @@
   <br />
   <br />
 
+  <hr>
+  
+  <div>
+    <h3 id="t-1">Title</h3>
+    <div id="c-1">
+      <table>
+        <tr>
+          <td>
+            <div id="q-1">Does this work?</div>
+          </td>
+          <td>
+            <div id="s-1"> Not Rated </div>
+          </td>
+        </tr>
+      </table>
+      <div id="e-1"></div>
+    </div>
+  </div>
 
   <hr>
   <h3>Basics</h3>
@@ -287,6 +305,60 @@
     document.getElementById('verbsfield').style.width = "800px";
     document.getElementById('rolesfield').style.width = "800px";
     document.getElementById('basicsfield').style.width = "800px";
+
+    function Test() {
+      console.log("Test")
+    }
+
+    function SetToggleState() {
+      console.log(event)
+      console.log(event.target)
+      console.log(event.target.id)
+      let elementNumber = event.target.id.split("-")[1];
+      if (elementNumber) {
+        let elementId = "s-" + elementNumber;
+        let currentState = document.getElementById(elementId).innerHTML;
+        if (currentState == "Not Rated") {
+          document.getElementById(elementId).innerHTML = "✅";
+          document.getElementById("e-" + elementNumber).innerHTML = "";
+        } else if (currentState == "✅") {
+          document.getElementById(elementId).innerHTML = "❌";
+          document.getElementById("e-" + elementNumber).innerHTML = "<p>Comments:</p> <input type=\"text\" id=\"xx\" name=\"fname\"><br>"
+          document.getElementById('xx').style.width = "800px";
+        } else {
+          document.getElementById(elementId).innerHTML = "Not Rated";
+          document.getElementById("e-" + elementNumber).innerHTML = "";
+        }
+      }
+    }
+
+    function CollapseOrExpand() {
+      let elementNumber = event.target.id.split("-")[1];
+      console.log(elementNumber)
+      if (elementNumber) {
+        let elementId = "c-" + elementNumber;
+        console.log(document.getElementById(elementId).innerHTML)
+        if (document.getElementById(elementId).innerHTML == "") {
+          document.getElementById(elementId).innerHTML = "<table><tr><td><div id=\"q-1\">Does this work?</div></td><td><div id=\"s-1\"> Not Rated </div></td></tr></table><div id=\"e-1\"></div>"
+        } else {
+          console.log("Should go here")
+          document.getElementById(elementId).innerHTML = "";
+        }
+        addListeners(elementNumber);
+      }
+    }
+
+    function addListeners(n) {
+      document.getElementById("q-"+n).addEventListener("click", SetToggleState);
+      document.getElementById("s-"+n).addEventListener("click", SetToggleState);
+      document.getElementById("t-"+n).addEventListener("click", CollapseOrExpand);
+    }
+
+    addListeners(1);
+
+  
+    
+
 
 
     document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
