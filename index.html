@@ -18,6 +18,8 @@
   <hr>
   <table id="content"></table>
   <hr>
+  
+  <hr>
   <script>
 
     state = {};
@@ -25,7 +27,6 @@
 
 
     function SetToggleState() {
-      console.log(event.target.id);
       let stateNumber = event.target.id.split("-")[1];
       if (stateNumber) {
         let cN = stateNumber.split(".")[0];
@@ -42,7 +43,8 @@
           state[cN].questions[qN].c = "";
         }
       }
-      renderState(state);
+      Save();
+      renderState();
     }
 
 
@@ -66,17 +68,19 @@
     function checkScore() {
       var score = 0;
       var number_of_checks = 0;
-      var all = document.getElementsByTagName("input");
-      for (let item of all) {
-        if (item.type == "checkbox") {
-          if (document.getElementById(item.id).checked) {
+      for (let i in state) {
+        for (let j in state[i].questions) {
+          let status = state[i].questions[j].s;
+          if ( status == "✅") {
             score += 1;
+          } else if ( status == "Not Rated") {
+            continue
           }
           number_of_checks += 1;
         }
       }
       var score = Math.round((score / number_of_checks) * 1000) / 10;
-      document.getElementById("scoreId").innerHTML = "Review Score: " + score + "%"
+      document.getElementById("scoreId").innerHTML = "Review Score: " + score + " %"
     }
 
 
@@ -88,10 +92,16 @@
     }
 
     function Load() {
-      var endpoint = document.getElementById("fname").value
-      let newState = JSON.parse(localStorage.getItem(endpoint));
-      state = newState;
-      renderState(state);
+      var endpoint = document.getElementById("fname").value;
+      if (localStorage.getItem(endpoint) === null) {
+        fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
+          state = newState;
+          renderState()
+        })
+      } else {
+        state = JSON.parse(localStorage.getItem(endpoint));
+        renderState()
+      }      
     }
 
     function getElementFromState(i) {
@@ -119,7 +129,7 @@
           s = s + "<tr>";
 
           s = s + "<td>";
-          s = s + "<div id=\"q-" + idx + "\">" + q + "</div>"
+          s = s + "<div style=\"width: 800px;\" id=\"q-" + idx + "\">" + q + "</div>"
           s = s + "</td>";
 
           s = s + "<td>";
@@ -143,7 +153,8 @@
       return s;
     }
 
-    function renderState(state){
+    function renderState(){
+      console.log("Render state", state);
       var table = document.getElementById('content'); 
       for (let i in state) {
         let card = getCard(state, i);
@@ -163,14 +174,7 @@
       }
     }
 
-    function onLoad() {
-      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
-        console.log(newState);
-        state = newState
-        renderState(state)
-      })
-    }
-    onLoad()
+    Load();
   </script>
 </body>
 </html>
