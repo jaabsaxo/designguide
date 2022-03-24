@@ -53,9 +53,8 @@
       console.log(elementNumber)
       if (elementNumber) {
         let elementId = "c-" + elementNumber;
-        console.log(document.getElementById(elementId).innerHTML)
         if (document.getElementById(elementId).innerHTML == "") {
-          document.getElementById(elementId).innerHTML = "<table><tr><td><div id=\"q-1\">Does this work?</div></td><td><div id=\"s-1\">Not Rated</div></td></tr></table><div id=\"e-1\"></div>"
+          renderState();
         } else {
           console.log("Should go here")
           document.getElementById(elementId).innerHTML = "";
