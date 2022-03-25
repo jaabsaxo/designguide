@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <body>
-  <h1>Design Guide</h1>
+  <h1>API Review</h1>
   <form>
     <label for="fname">Paste endpoint here:</label><br>
     <input type="text" id="fname" name="fname"><br>
@@ -13,346 +12,157 @@
   <button onclick="checkScore()">Calculate score</button>
   <button onclick="Load()">Load</button>
   <button onclick="Save()">Save</button>
+  <button onclick="Reset()">Reset</button>
   <br />
   <br />
-
-
   <hr>
-  <h3>Basics</h3>
-  <form>
-    <label>Is the design resource centric?
-      <input type="checkbox" id="q1" />
-      Passed </label> <br /><br />
-  </form>
-  <form>
-    <label>Does the design leak implementation details?
-      <input type="checkbox" id="q2" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="basicsfield" name="fname"><br>
-
-
-  <h3>Routes</h3>
-  <form>
-    <label>Does the routes use plurals to represent collections?
-      <input type="checkbox" id="q3" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Are there delimiters and spacers in path?
-      <input type="checkbox" id="q4" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Is partner only resources in a /partner path?
-      <input type="checkbox" id="q5" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="routesfield" name="fname"><br>
-
-
-  <h3>Http verbs</h3>
-  <form>
-    <label>Do they use the right HTTP verbs?
-      <input type="checkbox" id="q6" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use POST for getting resources when payload is large or PII data is present?
-      <input type="checkbox" id="q7" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="verbsfield" name="fname"><br>
-
-
-  <h3>Relationships and nested resources</h3>
-  <form>
-    <label>Do they expose more than just the ids of related resources?
-      <input type="checkbox" id="q8" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use field groups to expose linked ressources?
-      <input type="checkbox" id="q9" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use sub-collections properly?
-      <input type="checkbox" id="q10" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="nestingfield" name="fname"><br>
-
-
-  <h3>Datatypes and serialization</h3>
-  <form>
-    <label>Is everything pascal cased?
-      <input type="checkbox" id="q11" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Are property names in nested arrays in plural?
-      <input type="checkbox" id="q12" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use dates and datetimes right?
-      <input type="checkbox" id="q13" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Does ids expose any data?
-      <input type="checkbox" id="q14" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Are there any "bleed" through of .net data types?
-      <input type="checkbox" id="q15" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use booleans right?
-      <input type="checkbox" id="q16" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Are they using simple types when they should?
-      <input type="checkbox" id="q17" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="datatypesfield" name="fname"><br>
-
-
-  <h3>Naming</h3>
-  <form>
-    <label>Are any names redundant?
-      <input type="checkbox" id="q18" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use the same name for the same thing?
-      <input type="checkbox" id="q19" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use the type for the same thing?
-      <input type="checkbox" id="q20" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they return properties without values?
-      <input type="checkbox" id="q21" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="namingfield" name="fname"><br>
-
-
-  <h3>Returning a collection</h3>
-  <form>
-    <label>Do they use the collection envelope properly?
-      <input type="checkbox" id="q22" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Is pagination offered when it should be?
-      <input type="checkbox" id="q23" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Are they using other than 200 OK or 400 Bad Request?
-      <input type="checkbox" id="q24" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="collectionfield" name="fname"><br>
-
-
-  <h3>Returning a resource</h3>
-  <form>
-    <label>Are they using collection envelopes for single resources?
-      <input type="checkbox" id="q25" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Are they using other than 200 OK or 404 Not Found?
-      <input type="checkbox" id="q26" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="returningresourcefield" name="fname"><br>
-
-
-  <h3>Creating a resource</h3>
-  <form>
-    <label>Do they use POST or PUT right?
-      <input type="checkbox" id="q27" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Are there deadends after creation?
-      <input type="checkbox" id="q28" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use the right status code?
-      <input type="checkbox" id="q29" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="creatingresourcefield" name="fname"><br>
-
-
-  <h3>Updating a resource</h3>
-  <form>
-    <label>Does it make sense to update the entire resource with PUT?
-      <input type="checkbox" id="q30" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Or should they use Patch instead for an partial update?
-      <input type="checkbox" id="q31" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use 200 OK, 204 No contenet or 400 Bad Request right?
-      <input type="checkbox" id="q32" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="updatingresourcefield" name="fname"><br>
-
-
-  <h3>Streaming</h3>
-  <form>
-    <label>Is streaming initiated with a subscription?
-      <input type="checkbox" id="q33" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they use the common subscription request model?
-      <input type="checkbox" id="q34" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Do they provide a snapshot in the subscription response?
-      <input type="checkbox" id="q35" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Can subscriptions be deleted?
-      <input type="checkbox" id="q36" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="streamingfield" name="fname"><br>
-
-
-  <h3>Visibility and user roles</h3>
-  <form>
-    <label>Does visibility make sense?
-      <input type="checkbox" id="q37" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>Does user roles make sense?
-      <input type="checkbox" id="q38" />
-      Passed </label><br /><br />
-  </form>
-  <form>
-    <label>have they considered market data restrictions?
-      <input type="checkbox" id="q39" />
-      Passed </label><br /><br />
-  </form>
-  <p>Comments:</p>
-  <input type="text" id="rolesfield" name="fname"><br>
-
-
+  <table id="content"></table>
   <script>
-    document.getElementById('fname').style.width = "800px";
-    document.getElementById('routesfield').style.width = "800px";
-    document.getElementById('streamingfield').style.width = "800px";
-    document.getElementById('updatingresourcefield').style.width = "800px";
-    document.getElementById('creatingresourcefield').style.width = "800px";
-    document.getElementById('returningresourcefield').style.width = "800px";
-    document.getElementById('collectionfield').style.width = "800px";
-    document.getElementById('namingfield').style.width = "800px";
-    document.getElementById('datatypesfield').style.width = "800px";
-    document.getElementById('nestingfield').style.width = "800px";
-    document.getElementById('verbsfield').style.width = "800px";
-    document.getElementById('rolesfield').style.width = "800px";
-    document.getElementById('basicsfield').style.width = "800px";
-
-
+    state = {};
+    document.getElementById("fname").style.width="800px";
     document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
+
+    function SetToggleState() {
+      let stateNumber = event.target.id.split("-")[1];
+      if (stateNumber) {
+        let cN = stateNumber.split(".")[0];
+        let qN = stateNumber.split(".")[1];
+        let currentState = state[cN].questions[qN].s;
+        if (currentState == "Not Rated") {
+          state[cN].questions[qN].s = "✅";
+          state[cN].questions[qN].c = "";
+        } else if (currentState == "✅") {
+          state[cN].questions[qN].s = "❌";
+          state[cN].questions[qN].c = "Comment..";
+        } else if (currentState == "❌") {
+          state[cN].questions[qN].s = "✅";
+          state[cN].questions[qN].c = "";
+        }
+      }
+      Save();
+      checkScore();
+      renderState();
+    }
+
+    function CollapseOrExpand() {
+      let elementNumber = event.target.id.split("-")[1];
+      if (elementNumber) {
+        let elementId = "c-" + elementNumber;
+        if (document.getElementById(elementId).innerHTML == "") {
+          renderState();
+        } else {
+          document.getElementById(elementId).innerHTML = "";
+        }
+      }
+    }
 
     function checkScore() {
       var score = 0;
       var number_of_checks = 0;
-
-      var all = document.getElementsByTagName("input");
-
-      for (let item of all) {
-        if (item.type == "checkbox") {
-          if (document.getElementById(item.id).checked) {
+      for (let i in state) {
+        for (let j in state[i].questions) {
+          let status = state[i].questions[j].s;
+          if ( status == "✅") {
             score += 1;
+          } else if ( status == "Not Rated") {
+            continue
           }
           number_of_checks += 1;
         }
       }
       var score = Math.round((score / number_of_checks) * 1000) / 10;
-      document.getElementById("scoreId").innerHTML = "Review Score: " + score + "%"
+      document.getElementById("scoreId").innerHTML = "Review Score: " + score + " %"
     }
 
-
     function Save() {
-
-      var all = document.getElementsByTagName("input");
-      var state = {
-        "checkbox": {},
-        "text": {}
-      };
-
-      for (let item of all) {
-        if (item.type == "checkbox") {
-          k = item.id
-          v = document.getElementById(k).checked
-          state["checkbox"][k] = v;
-        }
-        if (item.type == "text") {
-          if (item.id != "fname") {
-            k = item.id
-            v = document.getElementById(k).value
-            state["text"][k] = v;
-          }
-        }
-      }
-
-
-      var endpoint = document.getElementById("fname").value
+      var endpoint = document.getElementById("fname").value;
       localStorage.setItem(endpoint, JSON.stringify(state));
       localStorage.setItem("gghfj-previous-endpoint", endpoint);
     }
 
     function Load() {
-      var endpoint = document.getElementById("fname").value
-      let state = JSON.parse(localStorage.getItem(endpoint));
-      for (var key in state["checkbox"]) {
-        if (state["checkbox"][key] == true) {
-          document.getElementById(key).checked = true
+      var endpoint = document.getElementById("fname").value;
+      if (localStorage.getItem(endpoint) === null) {
+        fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
+          state = newState;
+          renderState()
+        })
+      } else {
+        state = JSON.parse(localStorage.getItem(endpoint));
+        renderState()
+      }      
+    }
+
+    function Reset() {
+      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
+          state = newState;
+          checkScore();
+          renderState()
+        })
+    }
+
+    function getCard(state, i){
+      let title = state[i].title;
+      let questions = state[i].questions;
+      var s = "<div><h3 id=\"t-" + i + "\">" + title + "</h3>";
+      s = s + "<div id=\"c-"+ i + "\">";
+      s = s + "<table>";
+
+      for (let j in questions) {
+          let q = questions[j].q;
+          let c = questions[j].c;
+          let ss = questions[j].s;
+
+          let idx = i + "." + j; 
+          s = s + "<tr>";
+
+          s = s + "<td>";
+          s = s + "<div style=\"width: 800px;\" id=\"q-" + idx + "\">" + q + "</div>"
+          s = s + "</td>";
+
+          s = s + "<td>";
+          s = s + "<div id=\"s-" + idx + "\">" + ss + "</div>";
+          s = s + "</td>";
+
+          s = s + "</tr>";
+
+          if (c != "") {
+            s = s + "<tr>";
+            s = s + "<td>";
+            s = s + "<div id=\"e-"+ idx +"\">";
+            s = s + "<input type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
+            s = s + "</div>";
+            s = s + "</td>";
+            s = s + "</tr>";
+          }
+
+        }
+      s = s + "</table></div>"
+      return s;
+    }
+
+    function renderState(){
+      var table = document.getElementById('content'); 
+      table.innerHTML = "";
+      for (let i in state) {
+        let card = getCard(state, i);
+        var row = table.insertRow(-1);
+        var cell1 = row.insertCell(-1);
+        cell1.innerHTML = card;
+        document.getElementById("t-"+i).addEventListener("click", SetToggleState);
+        for (let j in state[i].questions) {
+          let idx = i + "." + j; 
+          document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
+          document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
+          document.getElementById("t-"+i).addEventListener("click", CollapseOrExpand);
+          if (state[i].questions[j].c != "") {
+            document.getElementById("ee-"+idx).style.width = "800px";
+          }
         }
       }
-      for (var key in state["text"]) {
-        document.getElementById(key).value = state["text"][key]
-      }
     }
+
+    Load();
   </script>
-
 </body>
-
 </html>
