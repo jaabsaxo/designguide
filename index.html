@@ -12,24 +12,31 @@
       </td>
     </tr>
   </table>
-  <form>
-    <label for="fname">Paste endpoint here:</label><br>
-    <input type="text" id="fname" name="fname"><br>
-  </form>
-  
+  <table>
+    <tr>
+      <td>
+        <form>
+          <input type="text" id="fname" name="fname"><br>
+        </form>
+      </td>
+      <td>
+        <button onclick="Load()">Load</button>
+      </td>
+      <td>
+        <button onclick="Save()">Save</button>
+      </td>
+      <td>
+        <button onclick="Reset()">Reset</button>
+      </td>
+    </tr>
+  </table>
   <br />
-  <p id="scoreId">Review Score: 0 %</p>
   <br />
-  <button onclick="checkScore()">Calculate score</button>
-  <button onclick="Load()">Load</button>
-  <button onclick="Save()">Save</button>
-  <button onclick="Reset()">Reset</button>
-  <br />
-  <br />
+  <table id ="menu"></table>
   <hr>
   <table id="content"></table>
   <script>
-    state = {};
+    state = {"view": "Design Basics"};
     document.getElementById("fname").style.width="800px";
     document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
 
@@ -38,20 +45,19 @@
       if (stateNumber) {
         let cN = stateNumber.split(".")[0];
         let qN = stateNumber.split(".")[1];
-        let currentState = state[cN].questions[qN].s;
+        let currentState = state["report"][state["view"]][cN].questions[qN].s;
         if (currentState == "Not Rated") {
-          state[cN].questions[qN].s = "✅";
-          state[cN].questions[qN].c = "";
+          state["report"][state["view"]][cN].questions[qN].s = "✅";
+          state["report"][state["view"]][cN].questions[qN].c = "";
         } else if (currentState == "✅") {
-          state[cN].questions[qN].s = "❌";
-          state[cN].questions[qN].c = "Comment..";
+          state["report"][state["view"]][cN].questions[qN].s = "❌";
+          state["report"][state["view"]][cN].questions[qN].c = "Comment..";
         } else if (currentState == "❌") {
-          state[cN].questions[qN].s = "✅";
-          state[cN].questions[qN].c = "";
+          state["report"][state["view"]][cN].questions[qN].s = "✅";
+          state["report"][state["view"]][cN].questions[qN].c = "";
         }
       }
       Save();
-      checkScore();
       renderState();
     }
 
@@ -67,27 +73,9 @@
       }
     }
 
-    function checkScore() {
-      var score = 0;
-      var number_of_checks = 0;
-      for (let i in state) {
-        for (let j in state[i].questions) {
-          let status = state[i].questions[j].s;
-          if ( status == "✅") {
-            score += 1;
-          } else if ( status == "Not Rated") {
-            continue
-          }
-          number_of_checks += 1;
-        }
-      }
-      var score = Math.round((score / number_of_checks) * 1000) / 10;
-      document.getElementById("scoreId").innerHTML = "Review Score: " + score + " %"
-    }
-
     function Save() {
       var endpoint = document.getElementById("fname").value;
-      localStorage.setItem(endpoint, JSON.stringify(state));
+      localStorage.setItem(endpoint, JSON.stringify(state["report"]));
       localStorage.setItem("gghfj-previous-endpoint", endpoint);
     }
 
@@ -95,26 +83,25 @@
       var endpoint = document.getElementById("fname").value;
       if (localStorage.getItem(endpoint) === null) {
         fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
-          state = newState;
+          state["report"] = newState;
           renderState()
         })
       } else {
-        state = JSON.parse(localStorage.getItem(endpoint));
+        state["report"]  = JSON.parse(localStorage.getItem(endpoint));
         renderState()
       }      
     }
 
     function Reset() {
       fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
-          state = newState;
-          checkScore();
+          state["report"] = newState;
           renderState()
         })
     }
 
-    function getCard(state, i){
-      let title = state[i].title;
-      let questions = state[i].questions;
+    function getCard(i){
+      let title = state["report"][state["view"]][i].title;
+      let questions = state["report"][state["view"]][i].questions;
       var s = "<div><h3 id=\"t-" + i + "\">" + title + "</h3>";
       s = s + "<div id=\"c-"+ i + "\">";
       s = s + "<table>";
@@ -153,24 +140,48 @@
     }
 
     function renderState(){
+      console.log(state);
       var table = document.getElementById('content'); 
       table.innerHTML = "";
-      for (let i in state) {
-        let card = getCard(state, i);
+      for (let i in state["report"][state["view"]]) {
+        console.log(i);
+        let card = getCard(i);
         var row = table.insertRow(-1);
         var cell1 = row.insertCell(-1);
         cell1.innerHTML = card;
         document.getElementById("t-"+i).addEventListener("click", SetToggleState);
-        for (let j in state[i].questions) {
+        for (let j in state["report"][state["view"]][i].questions) {
           let idx = i + "." + j; 
           document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
           document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
           document.getElementById("t-"+i).addEventListener("click", CollapseOrExpand);
-          if (state[i].questions[j].c != "") {
+          if (state["report"][state["view"]][i].questions[j].c != "") {
             document.getElementById("ee-"+idx).style.width = "800px";
           }
         }
       }
+      var table = document.getElementById('menu'); 
+      table.innerHTML = "";
+      var row = table.insertRow(0);
+      for (let key in state["report"]) {
+        var cell = row.insertCell(-1);
+        cell.innerHTML = getMenuButton(key);
+      }
+    }
+
+    function getMenuButton(name) {
+      htmlString = "<button id=\"m-" + name;
+      htmlString = htmlString + "\"onclick=\"MenuClick()\"";
+      htmlString = htmlString + "style=\"background-color:white; border: none;\"";
+      htmlString = htmlString + ">";
+      htmlString = htmlString + name;
+      htmlString = htmlString + "</button>";
+      return htmlString;
+    }
+
+    function MenuClick() {
+      state["view"] = event.target.id.split("-")[1];
+      renderState();
     }
 
     Load();
