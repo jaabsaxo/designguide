@@ -22,7 +22,6 @@
     document.getElementById("fname").style.width="800px";
     document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
 
-
     function SetToggleState() {
       let stateNumber = event.target.id.split("-")[1];
       if (stateNumber) {
@@ -45,16 +44,13 @@
       renderState();
     }
 
-
     function CollapseOrExpand() {
       let elementNumber = event.target.id.split("-")[1];
-      console.log(elementNumber)
       if (elementNumber) {
         let elementId = "c-" + elementNumber;
         if (document.getElementById(elementId).innerHTML == "") {
           renderState();
         } else {
-          console.log("Should go here")
           document.getElementById(elementId).innerHTML = "";
         }
       }
@@ -78,10 +74,8 @@
       document.getElementById("scoreId").innerHTML = "Review Score: " + score + " %"
     }
 
-
     function Save() {
-      var endpoint = document.getElementById("fname").value
-      console.log(state);
+      var endpoint = document.getElementById("fname").value;
       localStorage.setItem(endpoint, JSON.stringify(state));
       localStorage.setItem("gghfj-previous-endpoint", endpoint);
     }
@@ -99,16 +93,15 @@
       }      
     }
 
-    function getElementFromState(i) {
-      for (let k in state) {
-        if (i == state[k].i) {
-          return 
-        }
-      }
+    function Reset() {
+      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
+          state = newState;
+          checkScore();
+          renderState()
+        })
     }
 
     function getCard(state, i){
-
       let title = state[i].title;
       let questions = state[i].questions;
       var s = "<div><h3 id=\"t-" + i + "\">" + title + "</h3>";
@@ -167,14 +160,6 @@
           }
         }
       }
-    }
-
-    function Reset() {
-      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
-          state = newState;
-          checkScore();
-          renderState()
-        })
     }
 
     Load();
