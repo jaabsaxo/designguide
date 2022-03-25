@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <body>
-  <h1>Design Guide</h1>
+  <h1>API Review</h1>
   <form>
     <label for="fname">Paste endpoint here:</label><br>
     <input type="text" id="fname" name="fname"><br>
@@ -13,17 +12,15 @@
   <button onclick="checkScore()">Calculate score</button>
   <button onclick="Load()">Load</button>
   <button onclick="Save()">Save</button>
+  <button onclick="Reset()">Reset</button>
   <br />
   <br />
   <hr>
   <table id="content"></table>
-  <hr>
-  
-  <hr>
   <script>
-
     state = {};
     document.getElementById("fname").style.width="800px";
+    document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
 
 
     function SetToggleState() {
@@ -44,6 +41,7 @@
         }
       }
       Save();
+      checkScore();
       renderState();
     }
 
@@ -61,8 +59,6 @@
         }
       }
     }
-
-    document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
 
     function checkScore() {
       var score = 0;
@@ -141,7 +137,7 @@
             s = s + "<tr>";
             s = s + "<td>";
             s = s + "<div id=\"e-"+ idx +"\">";
-            s = s + "<input type=\"text\" value=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
+            s = s + "<input type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
             s = s + "</div>";
             s = s + "</td>";
             s = s + "</tr>";
@@ -153,12 +149,12 @@
     }
 
     function renderState(){
-      console.log("Render state", state);
       var table = document.getElementById('content'); 
+      table.innerHTML = "";
       for (let i in state) {
         let card = getCard(state, i);
-        var row = table.insertRow(0);
-        var cell1 = row.insertCell(0);
+        var row = table.insertRow(-1);
+        var cell1 = row.insertCell(-1);
         cell1.innerHTML = card;
         document.getElementById("t-"+i).addEventListener("click", SetToggleState);
         for (let j in state[i].questions) {
@@ -171,6 +167,14 @@
           }
         }
       }
+    }
+
+    function Reset() {
+      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
+          state = newState;
+          checkScore();
+          renderState()
+        })
     }
 
     Load();
