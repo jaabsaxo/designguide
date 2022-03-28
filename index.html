@@ -12,32 +12,28 @@
       </td>
     </tr>
   </table>
-  <table>
+  <table style="width: 100%;">
     <tr>
-      <td>
+      <td style="width: 50%;">
         <form>
-          <input type="text" id="fname" name="fname"><br>
+          <input type="text" id="fname" name="fname">
         </form>
       </td>
       <td>
         <button onclick="Load()">Load</button>
-      </td>
-      <td>
         <button onclick="Save()">Save</button>
-      </td>
-      <td>
         <button onclick="Reset()">Reset</button>
       </td>
     </tr>
-  </table>
+  </table style="width: 100%;">
   <br />
-  <br />
+  
   <table id ="menu"></table>
-  <hr>
+  <br />
   <table id="content"></table>
   <script>
     state = {"view": "Design Basics"};
-    document.getElementById("fname").style.width="800px";
+    document.getElementById("fname").style.width="99%";
     document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
 
     function SetToggleState() {
@@ -64,13 +60,13 @@
     function CollapseOrExpand() {
       let elementNumber = event.target.id.split("-")[1];
       if (elementNumber) {
-        let elementId = "c-" + elementNumber;
-        if (document.getElementById(elementId).innerHTML == "") {
-          renderState();
+        if (state["report"][state["view"]][elementNumber].visibility == 1) {
+          state["report"][state["view"]][elementNumber].visibility = 0;
         } else {
-          document.getElementById(elementId).innerHTML = "";
+          state["report"][state["view"]][elementNumber].visibility = 1;
         }
       }
+      renderState();
     }
 
     function Save() {
@@ -102,61 +98,65 @@
     function getCard(i){
       let title = state["report"][state["view"]][i].title;
       let questions = state["report"][state["view"]][i].questions;
+      let visible = state["report"][state["view"]][i].visibility;
       var s = "<div><h3 id=\"t-" + i + "\">" + title + "</h3>";
       s = s + "<div id=\"c-"+ i + "\">";
-      s = s + "<table>";
 
-      for (let j in questions) {
-          let q = questions[j].q;
-          let c = questions[j].c;
-          let ss = questions[j].s;
+      if (visible == 1) {
+        s = s + "<table>";
 
-          let idx = i + "." + j; 
-          s = s + "<tr>";
+        for (let j in questions) {
+            let q = questions[j].q;
+            let c = questions[j].c;
+            let ss = questions[j].s;
 
-          s = s + "<td>";
-          s = s + "<div style=\"width: 800px;\" id=\"q-" + idx + "\">" + q + "</div>"
-          s = s + "</td>";
-
-          s = s + "<td>";
-          s = s + "<div id=\"s-" + idx + "\">" + ss + "</div>";
-          s = s + "</td>";
-
-          s = s + "</tr>";
-
-          if (c != "") {
+            let idx = i + "." + j; 
             s = s + "<tr>";
+
             s = s + "<td>";
-            s = s + "<div id=\"e-"+ idx +"\">";
-            s = s + "<input type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
-            s = s + "</div>";
+            s = s + "<div style=\"width: 800px;\" id=\"q-" + idx + "\">" + q + "</div>"
             s = s + "</td>";
+
+            s = s + "<td>";
+            s = s + "<div id=\"s-" + idx + "\">" + ss + "</div>";
+            s = s + "</td>";
+
             s = s + "</tr>";
-          }
+
+            if (c != "") {
+              s = s + "<tr>";
+              s = s + "<td>";
+              s = s + "<div id=\"e-"+ idx +"\">";
+              s = s + "<input type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
+              s = s + "</div>";
+              s = s + "</td>";
+              s = s + "</tr>";
+            }
 
         }
-      s = s + "</table></div>"
+        s = s + "</table>"
+      }
+      s = s + "</div>";
       return s;
     }
 
     function renderState(){
-      console.log(state);
       var table = document.getElementById('content'); 
       table.innerHTML = "";
       for (let i in state["report"][state["view"]]) {
-        console.log(i);
         let card = getCard(i);
         var row = table.insertRow(-1);
         var cell1 = row.insertCell(-1);
         cell1.innerHTML = card;
-        document.getElementById("t-"+i).addEventListener("click", SetToggleState);
         for (let j in state["report"][state["view"]][i].questions) {
-          let idx = i + "." + j; 
-          document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
-          document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
           document.getElementById("t-"+i).addEventListener("click", CollapseOrExpand);
-          if (state["report"][state["view"]][i].questions[j].c != "") {
-            document.getElementById("ee-"+idx).style.width = "800px";
+          if ((state["report"][state["view"]][i].visibility == 1) ) {
+            let idx = i + "." + j; 
+            document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
+            document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
+            if (state["report"][state["view"]][i].questions[j].c != "") {
+              document.getElementById("ee-"+idx).style.width = "800px";
+            }
           }
         }
       }
@@ -165,14 +165,20 @@
       var row = table.insertRow(0);
       for (let key in state["report"]) {
         var cell = row.insertCell(-1);
-        cell.innerHTML = getMenuButton(key);
+        let isSelected = key==state["view"];
+        console.log(isSelected);
+        cell.innerHTML = getMenuButton(key, isSelected);
       }
     }
 
-    function getMenuButton(name) {
+    function getMenuButton(name, isSelected) {
       htmlString = "<button id=\"m-" + name;
       htmlString = htmlString + "\"onclick=\"MenuClick()\"";
-      htmlString = htmlString + "style=\"background-color:white; border: none;\"";
+      if (isSelected) {
+        htmlString = htmlString + "style=\"background-color:white; border: none; border-bottom-style: solid; border-bottom-width: 1px;\"";
+      } else {
+        htmlString = htmlString + "style=\"background-color:white; border: none;\"";
+      }
       htmlString = htmlString + ">";
       htmlString = htmlString + name;
       htmlString = htmlString + "</button>";
