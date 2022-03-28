@@ -14,7 +14,7 @@
   </table>
   <table style="width: 100%;">
     <tr>
-      <td style="width: 50%;">
+      <td style="width: 49.5%;">
         <form>
           <input type="text" id="fname" name="fname">
         </form>
@@ -25,15 +25,39 @@
         <button onclick="Reset()">Reset</button>
       </td>
     </tr>
-  </table style="width: 100%;">
+  </table >
   <br />
   
   <table id ="menu"></table>
   <br />
-  <table id="content"></table>
+
+  <table>
+    <tr>
+      <td style="width: 80%;">
+        <table id="content"></table>
+      </td>
+      <td style="vertical-align:top">
+        <table id = "summary">
+          <tr>
+            <td>
+              <p>Area</p>
+            </td>
+            <td>
+              <p>Status</p>
+            </td>
+            <td>
+              <p> Rating</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  
   <script>
     state = {"view": "Design Basics"};
-    document.getElementById("fname").style.width="99%";
+    document.getElementById("fname").style.width="95%";
     document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
 
     function SetToggleState() {
@@ -41,16 +65,16 @@
       if (stateNumber) {
         let cN = stateNumber.split(".")[0];
         let qN = stateNumber.split(".")[1];
-        let currentState = state["report"][state["view"]][cN].questions[qN].s;
+        let currentState = state["report"][state["view"]].Sections[cN].questions[qN].s;
         if (currentState == "Not Rated") {
-          state["report"][state["view"]][cN].questions[qN].s = "✅";
-          state["report"][state["view"]][cN].questions[qN].c = "";
+          state["report"][state["view"]].Sections[cN].questions[qN].s = "✅";
+          state["report"][state["view"]].Sections[cN].questions[qN].c = "";
         } else if (currentState == "✅") {
-          state["report"][state["view"]][cN].questions[qN].s = "❌";
-          state["report"][state["view"]][cN].questions[qN].c = "Comment..";
+          state["report"][state["view"]].Sections[cN].questions[qN].s = "❌";
+          state["report"][state["view"]].Sections[cN].questions[qN].c = "Comment..";
         } else if (currentState == "❌") {
-          state["report"][state["view"]][cN].questions[qN].s = "✅";
-          state["report"][state["view"]][cN].questions[qN].c = "";
+          state["report"][state["view"]].Sections[cN].questions[qN].s = "✅";
+          state["report"][state["view"]].Sections[cN].questions[qN].c = "";
         }
       }
       Save();
@@ -60,10 +84,10 @@
     function CollapseOrExpand() {
       let elementNumber = event.target.id.split("-")[1];
       if (elementNumber) {
-        if (state["report"][state["view"]][elementNumber].visibility == 1) {
-          state["report"][state["view"]][elementNumber].visibility = 0;
+        if (state["report"][state["view"]].Sections[elementNumber].visibility == 1) {
+          state["report"][state["view"]].Sections[elementNumber].visibility = 0;
         } else {
-          state["report"][state["view"]][elementNumber].visibility = 1;
+          state["report"][state["view"]].Sections[elementNumber].visibility = 1;
         }
       }
       renderState();
@@ -96,14 +120,14 @@
     }
 
     function getCard(i){
-      let title = state["report"][state["view"]][i].title;
-      let questions = state["report"][state["view"]][i].questions;
-      let visible = state["report"][state["view"]][i].visibility;
+      let title = state["report"][state["view"]].Sections[i].title;
+      let questions = state["report"][state["view"]].Sections[i].questions;
+      let visible = state["report"][state["view"]].Sections[i].visibility;
       var s = "<div><h3 id=\"t-" + i + "\">" + title + "</h3>";
       s = s + "<div id=\"c-"+ i + "\">";
 
       if (visible == 1) {
-        s = s + "<table>";
+        s = s + "<table style=\"width: 100%;\">";
 
         for (let j in questions) {
             let q = questions[j].q;
@@ -113,8 +137,8 @@
             let idx = i + "." + j; 
             s = s + "<tr>";
 
-            s = s + "<td>";
-            s = s + "<div style=\"width: 800px;\" id=\"q-" + idx + "\">" + q + "</div>"
+            s = s + "<td style=\"width: 95%;\">";
+            s = s + "<div id=\"q-" + idx + "\">" + q + "</div>"
             s = s + "</td>";
 
             s = s + "<td>";
@@ -127,7 +151,7 @@
               s = s + "<tr>";
               s = s + "<td>";
               s = s + "<div id=\"e-"+ idx +"\">";
-              s = s + "<input type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
+              s = s + "<input style=\"width: 100%;\" type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
               s = s + "</div>";
               s = s + "</td>";
               s = s + "</tr>";
@@ -143,22 +167,23 @@
     function renderState(){
       var table = document.getElementById('content'); 
       table.innerHTML = "";
-      for (let i in state["report"][state["view"]]) {
+      for (let i in state["report"][state["view"]].Sections) {
         let card = getCard(i);
         var row = table.insertRow(-1);
         var cell1 = row.insertCell(-1);
         cell1.innerHTML = card;
-        for (let j in state["report"][state["view"]][i].questions) {
+        for (let j in state["report"][state["view"]].Sections[i].questions) {
           document.getElementById("t-"+i).addEventListener("click", CollapseOrExpand);
-          if ((state["report"][state["view"]][i].visibility == 1) ) {
+          if ((state["report"][state["view"]].Sections[i].visibility == 1) ) {
             let idx = i + "." + j; 
             document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
             document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
-            if (state["report"][state["view"]][i].questions[j].c != "") {
-              document.getElementById("ee-"+idx).style.width = "800px";
+            if (state["report"][state["view"]].Sections[i].questions[j].c != "") {
+              document.getElementById("ee-"+idx).style.width = "100%";
             }
           }
         }
+        renderSummary();
       }
       var table = document.getElementById('menu'); 
       table.innerHTML = "";
@@ -189,6 +214,47 @@
       state["view"] = event.target.id.split("-")[1];
       renderState();
     }
+
+    function renderSummary() {
+      var table = document.getElementById('summary'); 
+      table.innerHTML = "";
+      var htmlString = "";
+      for (let key in state["report"]) {
+        htmlString += "<tr>";
+        htmlString += "<td>";
+        htmlString += "<p>" + key + "</p>";
+        htmlString += "</td>";
+        htmlString += "<td>";
+        htmlString += "<p>" + state["report"][state["view"]].Rating + "</p>";
+        htmlString += "</td>";
+        htmlString += "<td>";
+        htmlString += "<p>" + getCompletionScore(key) + "</p>";
+        htmlString += "</td>";
+        htmlString += "</tr>";
+      }
+      table.innerHTML = htmlString;
+    }
+
+    function getCompletionScore(key) {
+      var numberRated = 0;
+      var total = 0;
+      for (let i in state["report"][key].Sections) {
+        for (let j in state["report"][key].Sections[i].questions) {
+          let statusOfQuestions = state["report"][key].Sections[i].questions[j].s;
+          if (statusOfQuestions != "Not Rated") {
+            numberRated += 1;
+          }
+          total += 1;
+        }
+      }
+      let completionScore = Math.round((numberRated/total)*1000)/10;
+      if (completionScore == 0) {
+        completionScore = "";
+      }
+      console.log(completionScore);
+      return completionScore;
+    }
+
 
     Load();
   </script>
