@@ -30,6 +30,8 @@
   <table id ="menu"></table>
   <br />
   <table style="width: 60%;" id="content"></table>
+  <hr>
+  <h1>Rating</h1>
   <script>
     state = {"view": "Design Basics"};
     document.getElementById("fname").style.width="95%";
@@ -254,9 +256,9 @@
         for (let j in report[key].Sections) {
           report[key].Sections[j]["visibility"] = 1;
           let questions = [];
-          for (let q in report[key].Sections[j]) {
+          for (let q in report[key].Sections[j].questions) {
             questions.push({
-              "q": q,
+              "q": report[key].Sections[j].questions[q],
               "s": "Not Rated",
               "c": ""
             })
@@ -264,7 +266,6 @@
           report[key].Sections[j].questions = questions;
         }
       }
-      console.log(report);
       return report;
     }
 
