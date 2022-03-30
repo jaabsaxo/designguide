@@ -27,34 +27,9 @@
     </tr>
   </table >
   <br />
-  
   <table id ="menu"></table>
   <br />
-
-  <table>
-    <tr>
-      <td style="width: 80%;">
-        <table id="content"></table>
-      </td>
-      <td style="vertical-align:top">
-        <table id = "summary">
-          <tr>
-            <td>
-              <p>Area</p>
-            </td>
-            <td>
-              <p>Status</p>
-            </td>
-            <td>
-              <p> Rating</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-
-  
+  <table style="width: 60%;" id="content"></table>
   <script>
     state = {"view": "Design Basics"};
     document.getElementById("fname").style.width="95%";
@@ -102,8 +77,8 @@
     function Load() {
       var endpoint = document.getElementById("fname").value;
       if (localStorage.getItem(endpoint) === null) {
-        fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
-          state["report"] = newState;
+        fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( config => {
+          state["report"] = getReportStateFromConfig(config);
           renderState()
         })
       } else {
@@ -113,8 +88,8 @@
     }
 
     function Reset() {
-      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
-          state["report"] = newState;
+      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( config => {
+          state["report"] = getReportStateFromConfig(config);
           renderState()
         })
     }
@@ -137,11 +112,11 @@
             let idx = i + "." + j; 
             s = s + "<tr>";
 
-            s = s + "<td style=\"width: 95%;\">";
+            s = s + "<td style=\"width: 80%;\">";
             s = s + "<div id=\"q-" + idx + "\">" + q + "</div>"
             s = s + "</td>";
 
-            s = s + "<td>";
+            s = s + "<td style=\"width: 80%;\">";
             s = s + "<div id=\"s-" + idx + "\">" + ss + "</div>";
             s = s + "</td>";
 
@@ -151,7 +126,7 @@
               s = s + "<tr>";
               s = s + "<td>";
               s = s + "<div id=\"e-"+ idx +"\">";
-              s = s + "<input style=\"width: 100%;\" type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
+              s = s + "<input type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
               s = s + "</div>";
               s = s + "</td>";
               s = s + "</tr>";
@@ -167,33 +142,40 @@
     function renderState(){
       var table = document.getElementById('content'); 
       table.innerHTML = "";
-      for (let i in state["report"][state["view"]].Sections) {
-        let card = getCard(i);
-        var row = table.insertRow(-1);
-        var cell1 = row.insertCell(-1);
-        cell1.innerHTML = card;
-        for (let j in state["report"][state["view"]].Sections[i].questions) {
-          document.getElementById("t-"+i).addEventListener("click", CollapseOrExpand);
-          if ((state["report"][state["view"]].Sections[i].visibility == 1) ) {
-            let idx = i + "." + j; 
-            document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
-            document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
-            if (state["report"][state["view"]].Sections[i].questions[j].c != "") {
-              document.getElementById("ee-"+idx).style.width = "100%";
+      if (state["view"]=="Summary") {
+        let summary = getSummary();
+        table.innerHTML = summary;
+      } else {
+        for (let i in state["report"][state["view"]].Sections) {
+          let card = getCard(i);
+          var row = table.insertRow(-1);
+          var cell = row.insertCell(-1);
+          cell.innerHTML = card;
+          for (let j in state["report"][state["view"]].Sections[i].questions) {
+            document.getElementById("t-"+i).addEventListener("click", CollapseOrExpand);
+            if ((state["report"][state["view"]].Sections[i].visibility == 1) ) {
+              let idx = i + "." + j; 
+              document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
+              document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
+              if (state["report"][state["view"]].Sections[i].questions[j].c != "") {
+                document.getElementById("ee-"+idx).style.width = "100%";
+              }
             }
           }
         }
-        renderSummary();
       }
+      
       var table = document.getElementById('menu'); 
       table.innerHTML = "";
       var row = table.insertRow(0);
       for (let key in state["report"]) {
         var cell = row.insertCell(-1);
         let isSelected = key==state["view"];
-        console.log(isSelected);
         cell.innerHTML = getMenuButton(key, isSelected);
       }
+      var cell = row.insertCell(-1);
+      let isSelected = "Summary"==state["view"];
+      cell.innerHTML = getMenuButton("Summary", isSelected);
     }
 
     function getMenuButton(name, isSelected) {
@@ -215,24 +197,34 @@
       renderState();
     }
 
-    function renderSummary() {
-      var table = document.getElementById('summary'); 
-      table.innerHTML = "";
+    function getSummary() {
       var htmlString = "";
+      htmlString += "<h3>Summary</h3>";
+      htmlString += "<tr>";
+      htmlString += "<th style=\"text-align: left\"><p>Subject</p></th>";
+      htmlString += "<th style=\"text-align: left\"><p>Progress</p></th>";
+      htmlString += "<th style=\"text-align: left\"><p>Rating</p></th>";
+      htmlString += "</tr>";
+
       for (let key in state["report"]) {
         htmlString += "<tr>";
+
         htmlString += "<td>";
         htmlString += "<p>" + key + "</p>";
         htmlString += "</td>";
-        htmlString += "<td>";
-        htmlString += "<p>" + state["report"][state["view"]].Rating + "</p>";
-        htmlString += "</td>";
+
         htmlString += "<td>";
         htmlString += "<p>" + getCompletionScore(key) + "</p>";
         htmlString += "</td>";
+
+        htmlString += "<td>";
+        htmlString += "<p>" + state["report"][key].Rating + "</p>";
+        htmlString += "</td>";
+
         htmlString += "</tr>";
       }
-      table.innerHTML = htmlString;
+      console.log(htmlString);
+      return htmlString;
     }
 
     function getCompletionScore(key) {
@@ -248,11 +240,32 @@
         }
       }
       let completionScore = Math.round((numberRated/total)*1000)/10;
-      if (completionScore == 0) {
-        completionScore = "";
+      let completionText = "";
+      if (completionScore != 0) {
+        completionText = numberRated + " of " + total + " questions assesed (" + completionScore + "%)";
+      } 
+      return completionText;
+    }
+
+    function getReportStateFromConfig(config) {
+      let report = config;
+      for (let key in report) {
+        report[key]["Rating"] = "Not Rated"
+        for (let j in report[key].Sections) {
+          report[key].Sections[j]["visibility"] = 1;
+          let questions = [];
+          for (let q in report[key].Sections[j]) {
+            questions.push({
+              "q": q,
+              "s": "Not Rated",
+              "c": ""
+            })
+          }
+          report[key].Sections[j].questions = questions;
+        }
       }
-      console.log(completionScore);
-      return completionScore;
+      console.log(report);
+      return report;
     }
 
 
