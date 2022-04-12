@@ -12,25 +12,27 @@
       </td>
     </tr>
   </table>
-  <form>
-    <label for="fname">Paste endpoint here:</label><br>
-    <input type="text" id="fname" name="fname"><br>
-  </form>
-  
+  <table style="width: 100%;">
+    <tr>
+      <td style="width: 49.5%;">
+        <form>
+          <input type="text" id="fname" name="fname">
+        </form>
+      </td>
+      <td>
+        <button onclick="Load()">Load</button>
+        <button onclick="Save()">Save</button>
+        <button onclick="Reset()">Reset</button>
+      </td>
+    </tr>
+  </table >
   <br />
-  <p id="scoreId">Review Score: 0 %</p>
+  <table id ="menu"></table>
   <br />
-  <button onclick="checkScore()">Calculate score</button>
-  <button onclick="Load()">Load</button>
-  <button onclick="Save()">Save</button>
-  <button onclick="Reset()">Reset</button>
-  <br />
-  <br />
-  <hr>
-  <table id="content"></table>
+  <table style="width: 60%;" id="content"></table>
   <script>
-    state = {};
-    document.getElementById("fname").style.width="800px";
+    state = {"view": "Design Basics"};
+    document.getElementById("fname").style.width="95%";
     document.getElementById("fname").value = localStorage.getItem("gghfj-previous-endpoint")
 
     function SetToggleState() {
@@ -38,140 +40,233 @@
       if (stateNumber) {
         let cN = stateNumber.split(".")[0];
         let qN = stateNumber.split(".")[1];
-        let currentState = state[cN].questions[qN].s;
+        let currentState = state["report"][state["view"]].Sections[cN].questions[qN].s;
         if (currentState == "Not Rated") {
-          state[cN].questions[qN].s = "✅";
-          state[cN].questions[qN].c = "";
+          state["report"][state["view"]].Sections[cN].questions[qN].s = "✅";
+          state["report"][state["view"]].Sections[cN].questions[qN].c = "";
         } else if (currentState == "✅") {
-          state[cN].questions[qN].s = "❌";
-          state[cN].questions[qN].c = "Comment..";
+          state["report"][state["view"]].Sections[cN].questions[qN].s = "❌";
+          state["report"][state["view"]].Sections[cN].questions[qN].c = "Comment..";
         } else if (currentState == "❌") {
-          state[cN].questions[qN].s = "✅";
-          state[cN].questions[qN].c = "";
+          state["report"][state["view"]].Sections[cN].questions[qN].s = "✅";
+          state["report"][state["view"]].Sections[cN].questions[qN].c = "";
         }
       }
       Save();
-      checkScore();
       renderState();
     }
 
     function CollapseOrExpand() {
       let elementNumber = event.target.id.split("-")[1];
       if (elementNumber) {
-        let elementId = "c-" + elementNumber;
-        if (document.getElementById(elementId).innerHTML == "") {
-          renderState();
+        if (state["report"][state["view"]].Sections[elementNumber].visibility == 1) {
+          state["report"][state["view"]].Sections[elementNumber].visibility = 0;
         } else {
-          document.getElementById(elementId).innerHTML = "";
+          state["report"][state["view"]].Sections[elementNumber].visibility = 1;
         }
       }
-    }
-
-    function checkScore() {
-      var score = 0;
-      var number_of_checks = 0;
-      for (let i in state) {
-        for (let j in state[i].questions) {
-          let status = state[i].questions[j].s;
-          if ( status == "✅") {
-            score += 1;
-          } else if ( status == "Not Rated") {
-            continue
-          }
-          number_of_checks += 1;
-        }
-      }
-      var score = Math.round((score / number_of_checks) * 1000) / 10;
-      document.getElementById("scoreId").innerHTML = "Review Score: " + score + " %"
+      renderState();
     }
 
     function Save() {
       var endpoint = document.getElementById("fname").value;
-      localStorage.setItem(endpoint, JSON.stringify(state));
+      localStorage.setItem(endpoint, JSON.stringify(state["report"]));
       localStorage.setItem("gghfj-previous-endpoint", endpoint);
     }
 
     function Load() {
       var endpoint = document.getElementById("fname").value;
       if (localStorage.getItem(endpoint) === null) {
-        fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
-          state = newState;
+        fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( config => {
+          state["report"] = getReportStateFromConfig(config);
           renderState()
         })
       } else {
-        state = JSON.parse(localStorage.getItem(endpoint));
+        state["report"]  = JSON.parse(localStorage.getItem(endpoint));
         renderState()
       }      
     }
 
     function Reset() {
-      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( newState => {
-          state = newState;
-          checkScore();
+      fetch("https://jaabsaxo.github.io/designguide-config/config.json").then(r => r.json()).then( config => {
+          state["report"] = getReportStateFromConfig(config);
           renderState()
         })
     }
 
-    function getCard(state, i){
-      let title = state[i].title;
-      let questions = state[i].questions;
+    function getCard(i){
+      let title = state["report"][state["view"]].Sections[i].title;
+      let questions = state["report"][state["view"]].Sections[i].questions;
+      let visible = state["report"][state["view"]].Sections[i].visibility;
       var s = "<div><h3 id=\"t-" + i + "\">" + title + "</h3>";
       s = s + "<div id=\"c-"+ i + "\">";
-      s = s + "<table>";
 
-      for (let j in questions) {
-          let q = questions[j].q;
-          let c = questions[j].c;
-          let ss = questions[j].s;
+      if (visible == 1) {
+        s = s + "<table style=\"width: 100%;\">";
 
-          let idx = i + "." + j; 
-          s = s + "<tr>";
+        for (let j in questions) {
+            let q = questions[j].q;
+            let c = questions[j].c;
+            let ss = questions[j].s;
 
-          s = s + "<td>";
-          s = s + "<div style=\"width: 800px;\" id=\"q-" + idx + "\">" + q + "</div>"
-          s = s + "</td>";
-
-          s = s + "<td>";
-          s = s + "<div id=\"s-" + idx + "\">" + ss + "</div>";
-          s = s + "</td>";
-
-          s = s + "</tr>";
-
-          if (c != "") {
+            let idx = i + "." + j; 
             s = s + "<tr>";
-            s = s + "<td>";
-            s = s + "<div id=\"e-"+ idx +"\">";
-            s = s + "<input type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
-            s = s + "</div>";
+
+            s = s + "<td style=\"width: 80%;\">";
+            s = s + "<div id=\"q-" + idx + "\">" + q + "</div>"
             s = s + "</td>";
+
+            s = s + "<td style=\"width: 80%;\">";
+            s = s + "<div id=\"s-" + idx + "\">" + ss + "</div>";
+            s = s + "</td>";
+
             s = s + "</tr>";
-          }
+
+            if (c != "") {
+              s = s + "<tr>";
+              s = s + "<td>";
+              s = s + "<div id=\"e-"+ idx +"\">";
+              s = s + "<input type=\"text\" placeholder=\"" + c + "\" id=\"ee-" + idx + "\"><br>"
+              s = s + "</div>";
+              s = s + "</td>";
+              s = s + "</tr>";
+            }
 
         }
-      s = s + "</table></div>"
+        s = s + "</table>"
+      }
+      s = s + "</div>";
       return s;
     }
 
     function renderState(){
       var table = document.getElementById('content'); 
       table.innerHTML = "";
-      for (let i in state) {
-        let card = getCard(state, i);
-        var row = table.insertRow(-1);
-        var cell1 = row.insertCell(-1);
-        cell1.innerHTML = card;
-        document.getElementById("t-"+i).addEventListener("click", SetToggleState);
-        for (let j in state[i].questions) {
-          let idx = i + "." + j; 
-          document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
-          document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
-          document.getElementById("t-"+i).addEventListener("click", CollapseOrExpand);
-          if (state[i].questions[j].c != "") {
-            document.getElementById("ee-"+idx).style.width = "800px";
+      if (state["view"]=="Summary") {
+        let summary = getSummary();
+        table.innerHTML = summary;
+      } else {
+        for (let i in state["report"][state["view"]].Sections) {
+          let card = getCard(i);
+          var row = table.insertRow(-1);
+          var cell = row.insertCell(-1);
+          cell.innerHTML = card;
+          for (let j in state["report"][state["view"]].Sections[i].questions) {
+            document.getElementById("t-"+i).addEventListener("click", CollapseOrExpand);
+            if ((state["report"][state["view"]].Sections[i].visibility == 1) ) {
+              let idx = i + "." + j; 
+              document.getElementById("s-"+idx).addEventListener("click", SetToggleState);
+              document.getElementById("q-"+idx).addEventListener("click", SetToggleState);
+              if (state["report"][state["view"]].Sections[i].questions[j].c != "") {
+                document.getElementById("ee-"+idx).style.width = "100%";
+              }
+            }
           }
         }
       }
+      
+      var table = document.getElementById('menu'); 
+      table.innerHTML = "";
+      var row = table.insertRow(0);
+      for (let key in state["report"]) {
+        var cell = row.insertCell(-1);
+        let isSelected = key==state["view"];
+        cell.innerHTML = getMenuButton(key, isSelected);
+      }
+      var cell = row.insertCell(-1);
+      let isSelected = "Summary"==state["view"];
+      cell.innerHTML = getMenuButton("Summary", isSelected);
     }
+
+    function getMenuButton(name, isSelected) {
+      htmlString = "<button id=\"m-" + name;
+      htmlString = htmlString + "\"onclick=\"MenuClick()\"";
+      if (isSelected) {
+        htmlString = htmlString + "style=\"background-color:white; border: none; border-bottom-style: solid; border-bottom-width: 1px;\"";
+      } else {
+        htmlString = htmlString + "style=\"background-color:white; border: none;\"";
+      }
+      htmlString = htmlString + ">";
+      htmlString = htmlString + name;
+      htmlString = htmlString + "</button>";
+      return htmlString;
+    }
+
+    function MenuClick() {
+      state["view"] = event.target.id.split("-")[1];
+      renderState();
+    }
+
+    function getSummary() {
+      var htmlString = "";
+      htmlString += "<h3>Summary</h3>";
+      htmlString += "<tr>";
+      htmlString += "<th style=\"text-align: left\"><p>Subject</p></th>";
+      htmlString += "<th style=\"text-align: left\"><p>Progress</p></th>";
+      htmlString += "<th style=\"text-align: left\"><p>Rating</p></th>";
+      htmlString += "</tr>";
+
+      for (let key in state["report"]) {
+        htmlString += "<tr>";
+
+        htmlString += "<td>";
+        htmlString += "<p>" + key + "</p>";
+        htmlString += "</td>";
+
+        htmlString += "<td>";
+        htmlString += "<p>" + getCompletionScore(key) + "</p>";
+        htmlString += "</td>";
+
+        htmlString += "<td>";
+        htmlString += "<p>" + state["report"][key].Rating + "</p>";
+        htmlString += "</td>";
+
+        htmlString += "</tr>";
+      }
+      console.log(htmlString);
+      return htmlString;
+    }
+
+    function getCompletionScore(key) {
+      var numberRated = 0;
+      var total = 0;
+      for (let i in state["report"][key].Sections) {
+        for (let j in state["report"][key].Sections[i].questions) {
+          let statusOfQuestions = state["report"][key].Sections[i].questions[j].s;
+          if (statusOfQuestions != "Not Rated") {
+            numberRated += 1;
+          }
+          total += 1;
+        }
+      }
+      let completionScore = Math.round((numberRated/total)*1000)/10;
+      let completionText = "";
+      if (completionScore != 0) {
+        completionText = numberRated + " of " + total + " questions assesed (" + completionScore + "%)";
+      } 
+      return completionText;
+    }
+
+    function getReportStateFromConfig(config) {
+      let report = config;
+      for (let key in report) {
+        report[key]["Rating"] = "Not Rated"
+        for (let j in report[key].Sections) {
+          report[key].Sections[j]["visibility"] = 1;
+          let questions = [];
+          for (let q in report[key].Sections[j].questions) {
+            questions.push({
+              "q": report[key].Sections[j].questions[q],
+              "s": "Not Rated",
+              "c": ""
+            })
+          }
+          report[key].Sections[j].questions = questions;
+        }
+      }
+      return report;
+    }
+
 
     Load();
   </script>
